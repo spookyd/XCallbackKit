@@ -51,6 +51,7 @@
 		84200D46225438CE00FD8589 /* XCallbackError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCallbackError.swift; sourceTree = "<group>"; };
 		84200D47225438CE00FD8589 /* XCallbackRequestConvertable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCallbackRequestConvertable.swift; sourceTree = "<group>"; };
 		84200D48225438CE00FD8589 /* XCallbackActionHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCallbackActionHandling.swift; sourceTree = "<group>"; };
+		84200D6E2254649300FD8589 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +76,7 @@
 		84200D0D225437A300FD8589 = {
 			isa = PBXGroup;
 			children = (
+				84200D6E2254649300FD8589 /* README.md */,
 				84200D19225437A300FD8589 /* XCallbackKit */,
 				84200D24225437A300FD8589 /* XCallbackKitTests */,
 				84200D18225437A300FD8589 /* Products */,
@@ -124,13 +126,13 @@
 		84200D41225438CE00FD8589 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				84200D45225438CE00FD8589 /* XCallbackKit.swift */,
+				84200D47225438CE00FD8589 /* XCallbackRequestConvertable.swift */,
+				84200D44225438CE00FD8589 /* XCallbackRequest.swift */,
 				84200D42225438CE00FD8589 /* XCallbackResponse.swift */,
 				84200D43225438CE00FD8589 /* XCallbackRequestHandling.swift */,
-				84200D44225438CE00FD8589 /* XCallbackRequest.swift */,
-				84200D45225438CE00FD8589 /* XCallbackKit.swift */,
-				84200D46225438CE00FD8589 /* XCallbackError.swift */,
-				84200D47225438CE00FD8589 /* XCallbackRequestConvertable.swift */,
 				84200D48225438CE00FD8589 /* XCallbackActionHandling.swift */,
+				84200D46225438CE00FD8589 /* XCallbackError.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -157,6 +159,7 @@
 				84200D13225437A300FD8589 /* Sources */,
 				84200D14225437A300FD8589 /* Frameworks */,
 				84200D15225437A300FD8589 /* Resources */,
+				84200D6F2254714E00FD8589 /* Swiftlint */,
 			);
 			buildRules = (
 			);
@@ -239,6 +242,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		84200D6F2254714E00FD8589 /* Swiftlint */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Swiftlint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		84200D13225437A300FD8589 /* Sources */ = {

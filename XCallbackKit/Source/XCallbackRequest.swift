@@ -1,6 +1,6 @@
 //
 //  XCallbackRequest.swift
-//  XCallback
+//  XCallbackKit
 //
 //  Created by Luke Davis on 3/10/19.
 //  Copyright © 2019 Lucky 13 Technologies, LLC. All rights reserved.
@@ -15,7 +15,7 @@ public struct XCallbackParameter {
     public static let CancelKey: String = "x-cancel"
     static let ErrorCode: String = "errorCode"
     static let ErrorMessage: String = "errorMessage"
-    
+
 }
 
 public struct XCallbackRequest: Equatable {
@@ -24,17 +24,17 @@ public struct XCallbackRequest: Equatable {
     public var action: String
     public var parameters: [String: String]
     var appScheme: String?
-    
+
     public init(targetScheme: String, action: String) {
         self.targetScheme = targetScheme
         self.action = action
         self.parameters = [:]
     }
-    
+
     mutating public func addParameter(_ key: String, _ value: String) {
         parameters[key] = value
     }
-    
+
 }
 
 // MARK: - X-Callback Parameter Support
@@ -43,52 +43,52 @@ extension XCallbackRequest {
     public var xSourceApp: String? {
         return XCallbackKit.sourceApp
     }
-    
+
     public var xSuccess: XCallbackRequest? {
         guard let success = parameters[XCallbackParameter.SuccessKey] else { return .none }
         guard let url = URL(string: success) else { return .none }
         return try? url.asXCallbackRequest()
     }
-    
+
     public var xError: XCallbackRequest? {
         guard let error = parameters[XCallbackParameter.ErrorKey] else { return .none }
         guard let url = URL(string: error) else { return .none }
         return try? url.asXCallbackRequest()
     }
-    
+
     public var xCancel: XCallbackRequest? {
         guard let cancel = parameters[XCallbackParameter.CancelKey] else { return .none }
         guard let url = URL(string: cancel) else { return .none }
         return try? url.asXCallbackRequest()
     }
-    
+
     // MARK: Setters
     public mutating func addXSuccessAction(scheme: String, action: String) {
         addXCallbackParameter(XCallbackParameter.SuccessKey, scheme, action)
     }
-    
+
     public mutating func addXErrorAction(scheme: String, action: String) {
         addXCallbackParameter(XCallbackParameter.ErrorKey, scheme, action)
     }
-    
+
     public mutating func addXCancelAction(scheme: String, action: String) {
         addXCallbackParameter(XCallbackParameter.CancelKey, scheme, action)
     }
-    
+
     private mutating func addXCallbackParameter(_ callbackType: String, _ scheme: String, _ action: String) {
         let formedURLString = "\(scheme)://\(XCallbackRequest.callbackHost)/\(action)"
         addParameter(callbackType, formedURLString)
     }
-    
+
     // MARK: Removers
     public mutating func removeXSuccessAction() {
         parameters.removeValue(forKey: XCallbackParameter.SuccessKey)
     }
-    
+
     public mutating func removeXErrorAction() {
         parameters.removeValue(forKey: XCallbackParameter.ErrorKey)
     }
-    
+
     public mutating func removeXCancelAction() {
         parameters.removeValue(forKey: XCallbackParameter.CancelKey)
     }
@@ -116,7 +116,8 @@ extension XCallbackRequest {
     }
 
     func asURL() throws -> URL {
-        guard var components = URLComponents(string: "\(targetScheme)://\(XCallbackRequest.callbackHost)/\(action)") else {
+        let urlString = "\(targetScheme)://\(XCallbackRequest.callbackHost)/\(action)"
+        guard var components = URLComponents(string: urlString) else {
             throw XCallbackError.malformedRequest(reason: .invalidXCallbackURL(xCallbackURL: self))
         }
         let queryItems: [URLQueryItem] = try parameters.map({

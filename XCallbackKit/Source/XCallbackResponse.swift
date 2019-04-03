@@ -1,6 +1,6 @@
 //
 //  XCallbackResponse.swift
-//  XCallback
+//  XCallbackKit
 //
 //  Created by Luke Davis on 3/10/19.
 //  Copyright © 2019 Lucky 13 Technologies, LLC. All rights reserved.
@@ -18,14 +18,26 @@ public struct XCallbackResponse {
 
 extension XCallbackResponse {
     public static func success(parameters: [String: String]) -> XCallbackResponse {
-        return XCallbackResponse(parameters: parameters, errorCode: .none, errorMessage: .none, isSuccess: true, isCancel: false)
+        return XCallbackResponse(parameters: parameters,
+                                 errorCode: .none,
+                                 errorMessage: .none,
+                                 isSuccess: true,
+                                 isCancel: false)
     }
-    
+
     public static func error(code: Int, message: String) -> XCallbackResponse {
-        return XCallbackResponse(parameters: .none, errorCode: code, errorMessage: message, isSuccess: false, isCancel: false)
+        return XCallbackResponse(parameters: .none,
+                                 errorCode: code,
+                                 errorMessage: message,
+                                 isSuccess: false,
+                                 isCancel: false)
     }
-    
+
     public static func cancel() -> XCallbackResponse {
-        return XCallbackResponse(parameters: .none, errorCode: .none, errorMessage: .none, isSuccess: false, isCancel: true)
+        return XCallbackResponse(parameters: .none,
+                                 errorCode: .none,
+                                 errorMessage: .none,
+                                 isSuccess: false,
+                                 isCancel: true)
     }
 }

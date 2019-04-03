@@ -1,6 +1,6 @@
 //
 //  XCallbackError.swift
-//  XCallback
+//  XCallbackKit
 //
 //  Created by Luke Davis on 3/17/19.
 //  Copyright © 2019 Lucky 13 Technologies, LLC. All rights reserved.
@@ -9,10 +9,15 @@
 import Foundation
 
 public enum XCallbackError: Error {
+    case configurationFailure(reason: ConfigurationFailureReason)
     case malformedRequest(reason: MalformedRequestReason)
     case handlerFailure(reason: HandlerFailureReason)
     case unknownFailure(reason: ErrorReasonConvertable)
-    
+
+    public enum ConfigurationFailureReason {
+        case unregisteredApplicationScheme(scheme: String)
+    }
+
     public enum MalformedRequestReason {
         case invalidXCallbackURL(xCallbackURL: XCallbackRequestConvertable)
         case invalidScheme(expectedScheme: String)
@@ -21,13 +26,13 @@ public enum XCallbackError: Error {
         case missingSourceApp
         case missingRequiredProperty(propertyName: String)
     }
-    
+
     public enum HandlerFailureReason {
         case resourceNotFound(resourceID: String)
         case missingActionHandler(expectedAction: String)
         case genericActionFailure(underlyingReason: ErrorReasonConvertable)
     }
-    
+
 }
 
 public protocol ErrorReasonConvertable {
@@ -44,31 +49,51 @@ extension ErrorReasonConvertable where Self: CustomDebugStringConvertible {
 }
 
 extension XCallbackError: CustomDebugStringConvertible, ErrorReasonConvertable {
-    
+
     public var code: Int {
         switch self {
+        case .configurationFailure(reason: let reason): return reason.code
         case .malformedRequest(reason: let reason): return reason.code
         case .handlerFailure(reason: let reason): return reason.code
         case .unknownFailure(reason: let reason): return reason.code
         }
     }
-    
+
     public var description: String {
         switch self {
+        case .configurationFailure(reason: let reason): return reason.description
         case .malformedRequest(reason: let reason): return reason.description
         case .handlerFailure(reason: let reason): return reason.description
         case .unknownFailure(reason: let reason): return reason.description
         }
     }
-    
+
     public var debugDescription: String {
         switch self {
+        case .configurationFailure(reason: let reason):
+            return "Configuration Failure Error: \(reason)"
         case .malformedRequest(reason: let reason):
             return "Malformed Request Error: \(reason)"
         case .handlerFailure(reason: let reason):
             return "Internal Handler Error: \(reason)"
         case .unknownFailure(reason: let reason):
             return "Unknown Failure Error: \(reason)"
+        }
+    }
+}
+
+extension XCallbackError.ConfigurationFailureReason: CustomDebugStringConvertible, ErrorReasonConvertable {
+    public var code: Int {
+        switch self {
+        case .unregisteredApplicationScheme: return 1200
+        }
+    }
+
+    public var description: String {
+        switch self {
+        case .unregisteredApplicationScheme(scheme: let scheme):
+            // swiftlint:disable:next line_length
+            return "Scheme is not whitelisted. Add \(scheme) to your application info.plist under the LSApplicationQueriesSchemes key."
         }
     }
 }
@@ -84,7 +109,7 @@ extension XCallbackError.MalformedRequestReason: CustomDebugStringConvertible, E
         case .missingRequiredProperty: return 1321
         }
     }
-    
+
     public var description: String {
         switch self {
         case .invalidXCallbackURL(xCallbackURL: let callback):

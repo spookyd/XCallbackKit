@@ -1,6 +1,6 @@
 //
 //  XCallbackRequestHandling.swift
-//  XCallback
+//  XCallbackKit
 //
 //  Created by Luke Davis on 4/1/19.
 //  Copyright © 2019 Lucky 13 Technologies, LLC. All rights reserved.

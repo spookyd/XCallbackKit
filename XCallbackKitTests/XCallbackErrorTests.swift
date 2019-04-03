@@ -11,6 +11,14 @@ import XCTest
 
 class XCallbackErrorTests: XCTestCase {
 
+    // MARK: - Configuration Failure Tests
+    func testConfigurationMissingScheme() {
+        let actual = XCallbackError.configurationFailure(reason: .unregisteredApplicationScheme(scheme: UUID().uuidString))
+        XCTAssertEqual(actual.code, 1200)
+        // Should be meaningful text
+        XCTAssertGreaterThan(actual.description.count, 20)
+    }
+    
     // MARK: - Malformed XCallback Tests
     func testInvalidCallback() {
         let actual = XCallbackError.malformedRequest(reason: .invalidXCallbackURL(xCallbackURL: ThrowingXCallbackRequest()))
