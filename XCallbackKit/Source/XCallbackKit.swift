@@ -42,13 +42,17 @@ public class XCallbackKit {
         let xcallbackRequest = try request.asXCallbackRequest()
         let url = try xcallbackRequest.asURL()
         if requestHandler.canOpen(url: url) {
-            requestHandler.open(url: url) { success in
-
-            }
+            try open(url: url)
         } else {
             let targetScheme = xcallbackRequest.targetScheme
             let reason = XCallbackError.ConfigurationFailureReason.unregisteredApplicationScheme(scheme: targetScheme)
             throw XCallbackError.configurationFailure(reason: reason)
+        }
+    }
+    
+    internal func open(url: URL) throws {
+        requestHandler.open(url: url) { success in
+            
         }
     }
 
@@ -103,7 +107,8 @@ public class XCallbackKit {
                 return
             }
             do {
-                try self.send(callbackResponseURL)
+                let url = try callbackResponseURL.asURL()
+                try self.open(url: url)
             } catch {
 
             }
