@@ -119,7 +119,7 @@ class XCallbackRequestTests: XCTestCase {
     // MARK: - XCallback Parameters
     // MARK: xSource
     func testXSourceApp() {
-        let expected = Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String
+        let expected = Bundle.main.infoDictionary?["CFBundleName"] as? String
         let actual = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString).xSourceApp
         XCTAssertNotNil(actual)
         XCTAssertEqual(actual, expected)
@@ -129,20 +129,20 @@ class XCallbackRequestTests: XCTestCase {
     func testXSuccess() {
         let returnScheme = UUID().uuidString
         let action = UUID().uuidString
-        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
+        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?x-source=xctest")
         var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xSuccess)
         // Adding
         request.addXSuccessAction(scheme: returnScheme, action: action)
-        XCTAssertEqual(request.parameters.count, 1)
+        XCTAssertEqual(request.parameters.count, 2) // Accounts for x-source
         // Retrieval
         let actual = request.xSuccess
         XCTAssertNotNil(actual)
         XCTAssertEqual(try! actual?.asURL(), expected)
         // Removal
         request.removeXSuccessAction()
-        XCTAssertEqual(request.parameters.count, 0)
+        XCTAssertEqual(request.parameters.count, 1) // Accounts for x-source
     }
     
     func testXSuccess_Invalid() {
@@ -156,20 +156,20 @@ class XCallbackRequestTests: XCTestCase {
     func testXError() {
         let returnScheme = UUID().uuidString
         let action = UUID().uuidString
-        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
+        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?x-source=xctest")
         var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xError)
         // Adding
         request.addXErrorAction(scheme: returnScheme, action: action)
-        XCTAssertEqual(request.parameters.count, 1)
+        XCTAssertEqual(request.parameters.count, 2) // Accounts for x-source
         // Retrieval
         let actual = request.xError
         XCTAssertNotNil(actual)
         XCTAssertEqual(try! actual?.asURL(), expected)
         // Removal
         request.removeXErrorAction()
-        XCTAssertEqual(request.parameters.count, 0)
+        XCTAssertEqual(request.parameters.count, 1) // Accounts for x-source
     }
     
     func testXError_Invalid() {
@@ -183,20 +183,20 @@ class XCallbackRequestTests: XCTestCase {
     func testXCancel() {
         let returnScheme = UUID().uuidString
         let action = UUID().uuidString
-        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
+        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?x-source=xctest")
         var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xCancel)
         // Adding
         request.addXCancelAction(scheme: returnScheme, action: action)
-        XCTAssertEqual(request.parameters.count, 1)
+        XCTAssertEqual(request.parameters.count, 2) // Accounts for x-source
         // Retrieval
         let actual = request.xCancel
         XCTAssertNotNil(actual)
         XCTAssertEqual(try! actual?.asURL(), expected)
         // Removal
         request.removeXCancelAction()
-        XCTAssertEqual(request.parameters.count, 0)
+        XCTAssertEqual(request.parameters.count, 1) // Accounts for x-source
     }
     
     func testXCancel_Invalid() {

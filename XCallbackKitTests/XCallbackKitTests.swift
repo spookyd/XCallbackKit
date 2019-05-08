@@ -157,7 +157,7 @@ class MockRequestHandler: XCallbackRequestHandling {
     func canOpen(url: URL) -> Bool {
         return canOpenURLReturnValue
     }
-    func open(url: URL, _ onComplete: @escaping (Bool) -> Void) {
+    func open(url: URL) {
         openURLValue = url
     }
 }
