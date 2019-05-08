@@ -23,12 +23,15 @@ public struct XCallbackRequest: Equatable {
     public var targetScheme: String
     public var action: String
     public var parameters: [String: String]
-    var appScheme: String?
 
     public init(targetScheme: String, action: String) {
         self.targetScheme = targetScheme
         self.action = action
-        self.parameters = [:]
+        if let sourceApp = XCallbackKit.sourceApp {
+            self.parameters = [XCallbackParameter.SourceAppKey: sourceApp]
+        } else {
+            self.parameters = [:]
+        }
     }
 
     mutating public func addParameter(_ key: String, _ value: String) {
@@ -41,7 +44,12 @@ public struct XCallbackRequest: Equatable {
 extension XCallbackRequest {
     // MARK: Getters
     public var xSourceApp: String? {
-        return XCallbackKit.sourceApp
+        get {
+            return self.parameters[XCallbackParameter.SourceAppKey]
+        }
+        set {
+            self.parameters[XCallbackParameter.SourceAppKey] = newValue
+        }
     }
 
     public var xSuccess: XCallbackRequest? {
@@ -112,6 +120,7 @@ extension XCallbackRequest {
                 params[item.name] = value
             }
         }
+        params[XCallbackParameter.SourceAppKey] = XCallbackKit.sourceApp
         self.parameters = params
     }
 

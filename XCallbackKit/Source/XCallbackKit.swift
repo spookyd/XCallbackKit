@@ -14,10 +14,13 @@ import UIKit
 public class XCallbackKit {
 
     internal static let sourceApp: String? = {
-        return Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String
+        return Bundle.main.infoDictionary?["CFBundleName"] as? String
     }()
 
     private var handlers: [String: XCallbackActionHandling] = [:]
+
+    /// Disables querying for target app's scheme before sending request
+    public var disableSchemeQuerying: Bool = false
 
     let requestHandler: XCallbackRequestHandling
 
@@ -41,18 +44,12 @@ public class XCallbackKit {
     public func send(_ request: XCallbackRequestConvertable) throws {
         let xcallbackRequest = try request.asXCallbackRequest()
         let url = try xcallbackRequest.asURL()
-        if requestHandler.canOpen(url: url) {
-            try open(url: url)
+        if requestHandler.canOpen(url: url) || disableSchemeQuerying {
+            requestHandler.open(url: url)
         } else {
             let targetScheme = xcallbackRequest.targetScheme
             let reason = XCallbackError.ConfigurationFailureReason.unregisteredApplicationScheme(scheme: targetScheme)
             throw XCallbackError.configurationFailure(reason: reason)
-        }
-    }
-    
-    internal func open(url: URL) throws {
-        requestHandler.open(url: url) { success in
-            
         }
     }
 
@@ -103,15 +100,11 @@ public class XCallbackKit {
                 responseURL?.addParameter(XCallbackParameter.ErrorCode, "\(errorCode)")
                 responseURL?.addParameter(XCallbackParameter.ErrorMessage, errorMessage)
             }
-            guard let callbackResponseURL = responseURL else {
+            guard let callbackResponseURL = try? responseURL?.asURL() else {
+                // No response required
                 return
             }
-            do {
-                let url = try callbackResponseURL.asURL()
-                try self.open(url: url)
-            } catch {
-
-            }
+            self.requestHandler.open(url: callbackResponseURL)
         }
     }
 

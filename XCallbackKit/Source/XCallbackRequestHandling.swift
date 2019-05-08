@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol XCallbackRequestHandling {
-    func open(url: URL, _ onComplete: @escaping (Bool) -> Void)
+    func open(url: URL)
     func canOpen(url: URL) -> Bool
 }
 
@@ -17,7 +17,7 @@ extension UIApplication: XCallbackRequestHandling {
     public func canOpen(url: URL) -> Bool {
         return self.canOpenURL(url)
     }
-    public func open(url: URL, _ onComplete: @escaping (Bool) -> Void) {
-        self.open(url, options: [:], completionHandler: onComplete)
+    public func open(url: URL) {
+        self.open(url, options: [:])
     }
 }
