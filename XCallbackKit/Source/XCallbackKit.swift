@@ -19,8 +19,8 @@ public class XCallbackKit {
 
     private var handlers: [String: XCallbackActionHandling] = [:]
 
-    /// Disables querying for target app's scheme before sending request
-    public var disableSchemeQuerying: Bool = false
+    /// Enforces scheme querying. You may disable but it goes against security practices
+    public var isSchemeQueryingEnabled: Bool = true
 
     let requestHandler: XCallbackRequestHandling
 
@@ -44,7 +44,7 @@ public class XCallbackKit {
     public func send(_ request: XCallbackRequestConvertable) throws {
         let xcallbackRequest = try request.asXCallbackRequest()
         let url = try xcallbackRequest.asURL()
-        if requestHandler.canOpen(url: url) || disableSchemeQuerying {
+        if requestHandler.canOpen(url: url) || !isSchemeQueryingEnabled {
             requestHandler.open(url: url)
         } else {
             let targetScheme = xcallbackRequest.targetScheme
@@ -100,6 +100,8 @@ public class XCallbackKit {
                 responseURL?.addParameter(XCallbackParameter.ErrorCode, "\(errorCode)")
                 responseURL?.addParameter(XCallbackParameter.ErrorMessage, errorMessage)
             }
+            // When performing a callback response must add x-source into the parameters
+            responseURL?.xSourceApp = XCallbackKit.sourceApp
             guard let callbackResponseURL = try? responseURL?.asURL() else {
                 // No response required
                 return

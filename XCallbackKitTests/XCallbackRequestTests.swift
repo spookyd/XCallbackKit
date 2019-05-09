@@ -32,6 +32,14 @@ class XCallbackRequestTests: XCTestCase {
         XCTAssertEqual(actual.action, expectedAction)
     }
     
+    func testInitWithURL_extendedPathSupport() {
+        let scheme = UUID().uuidString
+        let expected = "\(UUID().uuidString)/\(UUID().uuidString)"
+        let url = URL(string: "\(scheme)://x-callback-url/\(expected)")!
+        let actual = try! XCallbackRequest(url: url)
+        XCTAssertEqual(actual.action, expected)
+    }
+    
     func testInitWithURL_missingScheme() {
         let action = UUID().uuidString
         let url = URL(string: "x-callback-url/\(action)")!
@@ -129,7 +137,7 @@ class XCallbackRequestTests: XCTestCase {
     func testXSuccess() {
         let returnScheme = UUID().uuidString
         let action = UUID().uuidString
-        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?x-source=xctest")
+        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
         var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xSuccess)
@@ -156,7 +164,7 @@ class XCallbackRequestTests: XCTestCase {
     func testXError() {
         let returnScheme = UUID().uuidString
         let action = UUID().uuidString
-        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?x-source=xctest")
+        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
         var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xError)
@@ -183,7 +191,7 @@ class XCallbackRequestTests: XCTestCase {
     func testXCancel() {
         let returnScheme = UUID().uuidString
         let action = UUID().uuidString
-        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?x-source=xctest")
+        let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
         var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xCancel)

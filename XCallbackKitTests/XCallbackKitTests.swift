@@ -49,6 +49,47 @@ class XCallbackKitTests: XCTestCase {
         XCTAssertFalse(self.kit.canHandle(request))
     }
     
+    // MARK: - Sending Requests
+    func testSend() {
+        let action = UUID().uuidString
+        requestHandler.canOpenURLReturnValue = true
+        let request = XCallbackRequest(targetScheme: "callbackTest", action: action)
+        let expected = try! request.asURL()
+        try! self.kit.send(request)
+        XCTAssertEqual(self.requestHandler.openURLValue!, expected)
+    }
+    
+    func testSend_invalidScheme() {
+        let action = UUID().uuidString
+        // Will cause a failure
+        requestHandler.canOpenURLReturnValue = false
+        self.kit.isSchemeQueryingEnabled = true
+        let request = XCallbackRequest(targetScheme: "callbackTest", action: action)
+        do {
+            try self.kit.send(request)
+            XCTFail("Expected to throw")
+        } catch let error as XCallbackError {
+            switch error {
+            case .configurationFailure(let reason):
+                XCTAssertEqual(reason.code, 1200)
+            default:
+                XCTFail("Unexpected XcallbackError type \(error)")
+            }
+        } catch {
+            XCTFail("Unexpected error thrown \(error)")
+        }
+    }
+    
+    func testSend_disablingSchemeQueryChecking() {
+        let action = UUID().uuidString
+        requestHandler.canOpenURLReturnValue = false
+        self.kit.isSchemeQueryingEnabled = false
+        let request = XCallbackRequest(targetScheme: "callbackTest", action: action)
+        let expected = try! request.asURL()
+        try! self.kit.send(request)
+        XCTAssertEqual(self.requestHandler.openURLValue!, expected)
+    }
+    
     // MARK: - Incoming Request Handling
     func testResponseHandler_success() {
         // Build Action Handler

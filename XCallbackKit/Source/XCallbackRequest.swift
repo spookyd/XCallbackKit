@@ -108,8 +108,9 @@ extension XCallbackRequest {
         guard let scheme = url.scheme else {
             throw XCallbackError.malformedRequest(reason: .missingScheme)
         }
-        guard let action = url.pathComponents.first(where: { $0 != "/" }) else {
-                throw XCallbackError.malformedRequest(reason: .missingAction)
+        let action = String(url.path.dropFirst())
+        if action.isEmpty {
+            throw XCallbackError.malformedRequest(reason: .missingAction)
         }
         self.targetScheme = scheme
         self.action = action
@@ -120,7 +121,6 @@ extension XCallbackRequest {
                 params[item.name] = value
             }
         }
-        params[XCallbackParameter.SourceAppKey] = XCallbackKit.sourceApp
         self.parameters = params
     }
 
