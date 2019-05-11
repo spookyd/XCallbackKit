@@ -9,13 +9,12 @@
 import UIKit
 
 /**
- Class for handling outing and incoming X-Callback-URL requests.
+ Class for handling outgoing and incoming [X-Callback-URL](http://x-callback-url.com/specifications/) requests.
  */
 public class XCallbackKit {
 
-    internal static let sourceApp: String? = {
-        return Bundle.main.infoDictionary?["CFBundleName"] as? String
-    }()
+    /// The application name to be used in the `x-source` property
+    public static let sourceApp: String? = Bundle.main.infoDictionary?["CFBundleName"] as? String
 
     private var handlers: [String: XCallbackActionHandling] = [:]
 

@@ -8,20 +8,17 @@
 
 import Foundation
 
-public struct XCallbackParameter {
-    public static let SourceAppKey: String = "x-source"
-    public static let SuccessKey: String = "x-success"
-    public static let ErrorKey: String = "x-error"
-    public static let CancelKey: String = "x-cancel"
-    static let ErrorCode: String = "errorCode"
-    static let ErrorMessage: String = "errorMessage"
-
-}
-
+/**
+ Model used when sending and receiving requests which conform to the
+ [x-callback-url specs](http://x-callback-url.com/specifications/).
+ */
 public struct XCallbackRequest: Equatable {
     static let callbackHost = "x-callback-url"
+    /// The scheme which is used to initate the request
     public var targetScheme: String
+    /// The action for the target scheme to handle
     public var action: String
+    /// The parameters to be passed as part of the request
     public var parameters: [String: String]
 
     public init(targetScheme: String, action: String) {
@@ -34,7 +31,10 @@ public struct XCallbackRequest: Equatable {
         }
     }
 
-    mutating public func addParameter(_ key: String, _ value: String) {
+    /**
+     Adds a new parameter to the request's parameters
+     */
+    public mutating  func addParameter(_ key: String, _ value: String) {
         parameters[key] = value
     }
 
@@ -43,6 +43,8 @@ public struct XCallbackRequest: Equatable {
 // MARK: - X-Callback Parameter Support
 extension XCallbackRequest {
     // MARK: Getters
+
+    /// Represents the `x-source` parameter
     public var xSourceApp: String? {
         get {
             return self.parameters[XCallbackParameter.SourceAppKey]
@@ -52,18 +54,21 @@ extension XCallbackRequest {
         }
     }
 
+    /// Accessor for the `x-success` parameter if previously set; otherwise `nil`
     public var xSuccess: XCallbackRequest? {
         guard let success = parameters[XCallbackParameter.SuccessKey] else { return .none }
         guard let url = URL(string: success) else { return .none }
         return try? url.asXCallbackRequest()
     }
 
+    /// Accessor for the `x-error` parameter if previously set; otherwise `nil`
     public var xError: XCallbackRequest? {
         guard let error = parameters[XCallbackParameter.ErrorKey] else { return .none }
         guard let url = URL(string: error) else { return .none }
         return try? url.asXCallbackRequest()
     }
 
+    /// Accessor for the `x-cancel` parameter if previously set; otherwise `nil`
     public var xCancel: XCallbackRequest? {
         guard let cancel = parameters[XCallbackParameter.CancelKey] else { return .none }
         guard let url = URL(string: cancel) else { return .none }
@@ -71,14 +76,36 @@ extension XCallbackRequest {
     }
 
     // MARK: Setters
+
+    /**
+     Adds the `x-success` parameter using the provided scheme and action
+     
+     - Parameters:
+        - scheme: The target scheme to handle the success action
+        - action: The action to be called upon success
+     */
     public mutating func addXSuccessAction(scheme: String, action: String) {
         addXCallbackParameter(XCallbackParameter.SuccessKey, scheme, action)
     }
 
+    /**
+     Adds the `x-error` parameter using the provided scheme and action
+     
+     - Parameters:
+        - scheme: The target scheme to handle the error action
+        - action: The action to be called upon error
+     */
     public mutating func addXErrorAction(scheme: String, action: String) {
         addXCallbackParameter(XCallbackParameter.ErrorKey, scheme, action)
     }
 
+    /**
+     Adds the `x-cancel` parameter using the provided scheme and action
+     
+     - Parameters:
+        - scheme: The target scheme to handle the cancel action
+        - action: The action to be called upon cancel
+     */
     public mutating func addXCancelAction(scheme: String, action: String) {
         addXCallbackParameter(XCallbackParameter.CancelKey, scheme, action)
     }
@@ -89,14 +116,18 @@ extension XCallbackRequest {
     }
 
     // MARK: Removers
+
+    /// Removes the `x-success` parameter
     public mutating func removeXSuccessAction() {
         parameters.removeValue(forKey: XCallbackParameter.SuccessKey)
     }
 
+    /// Removes the `x-error` parameter
     public mutating func removeXErrorAction() {
         parameters.removeValue(forKey: XCallbackParameter.ErrorKey)
     }
 
+    /// Removes the `x-cancel` parameter
     public mutating func removeXCancelAction() {
         parameters.removeValue(forKey: XCallbackParameter.CancelKey)
     }
