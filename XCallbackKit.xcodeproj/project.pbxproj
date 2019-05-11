@@ -21,6 +21,7 @@
 		84200D54225438CE00FD8589 /* XCallbackError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84200D46225438CE00FD8589 /* XCallbackError.swift */; };
 		84200D55225438CE00FD8589 /* XCallbackRequestConvertable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84200D47225438CE00FD8589 /* XCallbackRequestConvertable.swift */; };
 		84200D56225438CE00FD8589 /* XCallbackActionHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84200D48225438CE00FD8589 /* XCallbackActionHandling.swift */; };
+		8458EE362284FD140076C356 /* XCallbackParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8458EE352284FD140076C356 /* XCallbackParameter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -52,6 +53,7 @@
 		84200D47225438CE00FD8589 /* XCallbackRequestConvertable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCallbackRequestConvertable.swift; sourceTree = "<group>"; };
 		84200D48225438CE00FD8589 /* XCallbackActionHandling.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = XCallbackActionHandling.swift; sourceTree = "<group>"; };
 		84200D6E2254649300FD8589 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		8458EE352284FD140076C356 /* XCallbackParameter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCallbackParameter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,6 +132,7 @@
 				84200D47225438CE00FD8589 /* XCallbackRequestConvertable.swift */,
 				84200D44225438CE00FD8589 /* XCallbackRequest.swift */,
 				84200D42225438CE00FD8589 /* XCallbackResponse.swift */,
+				8458EE352284FD140076C356 /* XCallbackParameter.swift */,
 				84200D43225438CE00FD8589 /* XCallbackRequestHandling.swift */,
 				84200D48225438CE00FD8589 /* XCallbackActionHandling.swift */,
 				84200D46225438CE00FD8589 /* XCallbackError.swift */,
@@ -270,6 +273,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84200D56225438CE00FD8589 /* XCallbackActionHandling.swift in Sources */,
+				8458EE362284FD140076C356 /* XCallbackParameter.swift in Sources */,
 				84200D53225438CE00FD8589 /* XCallbackKit.swift in Sources */,
 				84200D50225438CE00FD8589 /* XCallbackResponse.swift in Sources */,
 				84200D55225438CE00FD8589 /* XCallbackRequestConvertable.swift in Sources */,

@@ -8,16 +8,41 @@
 
 import Foundation
 
+/**
+ `XCallbackError` are different types of errors which can occur while using `XCallbackKit` each containing their own
+ reasons.
+ 
+ - configurationFailure: Returned when the framework or application has not been configured correctly
+ - malformedRequest: Returned when a `XCallbackRequest` has not been properly formed
+ - handlerFailure: Returned when a failure has occured while handling a request
+ - unknownFailure: Returned when an unknown failure occurs
+ */
 public enum XCallbackError: Error {
     case configurationFailure(reason: ConfigurationFailureReason)
     case malformedRequest(reason: MalformedRequestReason)
     case handlerFailure(reason: HandlerFailureReason)
     case unknownFailure(reason: ErrorReasonConvertable)
 
+    /**
+     The underlying reason for the application configuration failure to occur.
+     
+     - unregisteredApplicationScheme: The info.plist did not contain the underlying scheme.
+     */
     public enum ConfigurationFailureReason {
         case unregisteredApplicationScheme(scheme: String)
     }
 
+    /**
+     The underlying reason for a malformed request failure to occur.
+     
+     - invalidXCallbackURL: The underlying `XCallbackRequestConvertable` was not able to be converted to an
+     `XCallbackRequest`
+     - invalidScheme: The provided scheme was invalid
+     - missingScheme: No scheme was provided
+     - missingAction: No action was provided
+     - missingSourceApp: No source aop was provided
+     - missingRequiredProperty: The request is missing the required property
+     */
     public enum MalformedRequestReason {
         case invalidXCallbackURL(xCallbackURL: XCallbackRequestConvertable)
         case invalidScheme(expectedScheme: String)
@@ -27,6 +52,13 @@ public enum XCallbackError: Error {
         case missingRequiredProperty(propertyName: String)
     }
 
+    /**
+     The underlying reason for the handler failure to occur.
+     
+     - resourceNotFound: The resource was not found with the provided resourceID
+     - missingActionHandler: The expected action did not have an assigned action handler
+     - genericActionFailure: An unknown underlying error occurred
+     */
     public enum HandlerFailureReason {
         case resourceNotFound(resourceID: String)
         case missingActionHandler(expectedAction: String)
@@ -35,8 +67,15 @@ public enum XCallbackError: Error {
 
 }
 
+/**
+ Types adopting the `ErrorReasonConvertable` can be used to provide reason details about the error
+ */
 public protocol ErrorReasonConvertable {
+
+    /// A unique code which identifies the error type
     var code: Int { get }
+
+    /// A description of the reason for the error
     var description: String { get }
 }
 

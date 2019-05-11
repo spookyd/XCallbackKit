@@ -8,8 +8,25 @@
 
 import Foundation
 
+/**
+ A type which handles request dispatching
+ */
 public protocol XCallbackRequestHandling {
+
+    /**
+    Opens the provided url
+    
+    - Parameter url: the url to open
+    */
     func open(url: URL)
+
+    /**
+     Checks both if the scheme is added under `LSApplicationQueriesSchemes` in the info.plist and that the device
+     contains an application which will handle the url
+     
+     - Parameter url: the url to validate
+     - Returns: `true` if the url can be opened; otherwise `false`
+     */
     func canOpen(url: URL) -> Bool
 }
 
