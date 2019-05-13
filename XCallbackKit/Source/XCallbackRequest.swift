@@ -34,7 +34,7 @@ public struct XCallbackRequest: Equatable {
     /**
      Adds a new parameter to the request's parameters
      */
-    public mutating  func addParameter(_ key: String, _ value: String) {
+    public mutating func addParameter(_ key: String, _ value: String) {
         parameters[key] = value
     }
 
