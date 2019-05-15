@@ -2,6 +2,8 @@
 
 ---
 
+[![Build Status](https://travis-ci.com/spookyd/XCallbackKit.svg?branch=master)](https://travis-ci.com/spookyd/XCallbackKit)
+
 Provides mechanism for inter-application communications that is [x-callback-url](http://x-callback-url.com/specifications/) compliant.
 
 ## How to Use
