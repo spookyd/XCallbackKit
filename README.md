@@ -2,6 +2,8 @@
 
 ---
 
+[![Build Status](https://app.bitrise.io/app/7fe36c0dde679af5/status.svg?token=_yT_qaaOKwYWU3_KVywi1w&branch=master)](https://app.bitrise.io/app/7fe36c0dde679af5)
+
 Provides mechanism for inter-application communications that is [x-callback-url](http://x-callback-url.com/specifications/) compliant.
 
 ## How to Use
