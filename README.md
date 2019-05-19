@@ -1,8 +1,8 @@
 # XCallbackKit
 
----
-
 [![Build Status](https://travis-ci.com/spookyd/XCallbackKit.svg?branch=master)](https://travis-ci.com/spookyd/XCallbackKit)
+
+![XCallbackKit: Inter-application coomunication](https://raw.githubusercontent.com/spookyd/XCallbackKit/master/logo.png)
 
 Provides mechanism for inter-application communications that is [x-callback-url](http://x-callback-url.com/specifications/) compliant.
 
