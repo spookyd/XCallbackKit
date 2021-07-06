@@ -156,22 +156,30 @@ extension XCallbackRequest {
     }
 
     func asURL() throws -> URL {
-        let urlString = "\(targetScheme)://\(XCallbackRequest.callbackHost)/\(action)"
-        guard var components = URLComponents(string: urlString) else {
-            throw XCallbackError.malformedRequest(reason: .invalidXCallbackURL(xCallbackURL: self))
+        let baseURLString = "\(targetScheme)://\(XCallbackRequest.callbackHost)"
+        guard var components = URLComponents(string: baseURLString) else {
+            throw XCallbackError.malformedRequest(
+                reason: .invalidXCallbackURL(xCallbackURL: self)
+            )
         }
-        let queryItems: [URLQueryItem] = try parameters.map({
-            guard let key = $0.key.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                throw XCallbackError.malformedRequest(reason: .invalidXCallbackURL(xCallbackURL: self))
-            }
-            guard let value = $0.value.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) else {
-                throw XCallbackError.malformedRequest(reason: .invalidXCallbackURL(xCallbackURL: self))
-            }
-            return URLQueryItem(name: key, value: value)
+        guard components.scheme != nil else {
+            throw XCallbackError.malformedRequest(
+                reason: .invalidXCallbackURL(xCallbackURL: self)
+            )
+        }
+        guard !action.isEmpty else {
+            throw XCallbackError.malformedRequest(
+                reason: .invalidXCallbackURL(xCallbackURL: self)
+            )
+        }
+        components.path = "/\(action)"
+        components.queryItems = parameters.map({
+            URLQueryItem(name: $0.key, value: $0.value)
         })
-        components.queryItems = queryItems
         guard let url = components.url else {
-            throw XCallbackError.malformedRequest(reason: .invalidXCallbackURL(xCallbackURL: self))
+            throw XCallbackError.malformedRequest(
+                reason: .invalidXCallbackURL(xCallbackURL: self)
+            )
         }
         return url
     }
