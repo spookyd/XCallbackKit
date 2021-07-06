@@ -6,7 +6,7 @@
 //  Copyright © 2019 Lucky 13 Technologies, LLC. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 /**
  A type which handles request dispatching
@@ -34,6 +34,7 @@ extension UIApplication: XCallbackRequestHandling {
     public func canOpen(url: URL) -> Bool {
         return self.canOpenURL(url)
     }
+    
     public func open(url: URL) {
         self.open(url, options: [:])
     }

@@ -15,7 +15,8 @@ class XCallbackRequestTests: XCTestCase {
     func testAddingParameter() {
         let expected = UUID().uuidString
         let key = UUID().uuidString
-        var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
+        var request = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                       action: UUID().uuidString)
         request.addParameter(key, expected)
         let actual = request.parameters[key]
         XCTAssertNotNil(actual)
@@ -23,20 +24,20 @@ class XCallbackRequestTests: XCTestCase {
     }
 
     // MARK: - URL Support
-    func testInitWithURL() {
-        let expectedScheme = UUID().uuidString
+    func testInitWithURL() throws {
+        let expectedScheme = URL.generateValidScheme()
         let expectedAction = UUID().uuidString
         let url = URL(string: "\(expectedScheme)://x-callback-url/\(expectedAction)")!
-        let actual = try! XCallbackRequest(url: url)
+        let actual = try XCallbackRequest(url: url)
         XCTAssertEqual(actual.targetScheme, expectedScheme)
         XCTAssertEqual(actual.action, expectedAction)
     }
     
-    func testInitWithURL_extendedPathSupport() {
-        let scheme = UUID().uuidString
+    func testInitWithURL_extendedPathSupport() throws {
+        let scheme = URL.generateValidScheme()
         let expected = "\(UUID().uuidString)/\(UUID().uuidString)"
         let url = URL(string: "\(scheme)://x-callback-url/\(expected)")!
-        let actual = try! XCallbackRequest(url: url)
+        let actual = try XCallbackRequest(url: url)
         XCTAssertEqual(actual.action, expected)
     }
     
@@ -62,7 +63,7 @@ class XCallbackRequestTests: XCTestCase {
     }
     
     func testInitWithURL_missingAction() {
-        let scheme = UUID().uuidString
+        let scheme = URL.generateValidScheme()
         let url = URL(string: "\(scheme)://x-callback-url")!
         do {
             _ = try XCallbackRequest(url: url)
@@ -92,18 +93,20 @@ class XCallbackRequestTests: XCTestCase {
         XCTAssertEqual(param?.value, expectedValue)
     }
     
-    func testAsURL() {
-        var expected = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
+    func testAsURL() throws {
+        var expected = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                        action: UUID().uuidString)
         let parameterKey = UUID().uuidString
         let parameterValue = UUID().uuidString
         expected.addParameter(parameterKey, parameterValue)
-        let actual = try! expected.asURL()
+        let actual = try expected.asURL()
         XCTAssertEqual(actual.scheme, expected.targetScheme)
         XCTAssertEqual(actual.lastPathComponent, expected.action)
     }
     
     func testAsURL_invalidScheme() {
-        let expected = XCallbackRequest(targetScheme: " ", action: UUID().uuidString)
+        let expected = XCallbackRequest(targetScheme: URL.generateInvalidScheme(),
+                                        action: UUID().uuidString)
         do {
             _ = try expected.asURL()
             XCTFail("Expected to throw error")
@@ -128,14 +131,15 @@ class XCallbackRequestTests: XCTestCase {
     // MARK: xSource
     func testXSourceApp() {
         let expected = Bundle.main.infoDictionary?["CFBundleName"] as? String
-        let actual = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString).xSourceApp
+        let actual = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                      action: UUID().uuidString).xSourceApp
         XCTAssertNotNil(actual)
         XCTAssertEqual(actual, expected)
     }
     
     // MARK: xSuccess
-    func testXSuccess() {
-        let returnScheme = UUID().uuidString
+    func testXSuccess() throws {
+        let returnScheme = URL.generateValidScheme()
         let action = UUID().uuidString
         let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
         var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
@@ -145,9 +149,8 @@ class XCallbackRequestTests: XCTestCase {
         request.addXSuccessAction(scheme: returnScheme, action: action)
         XCTAssertEqual(request.parameters.count, 2) // Accounts for x-source
         // Retrieval
-        let actual = request.xSuccess
-        XCTAssertNotNil(actual)
-        XCTAssertEqual(try! actual?.asURL(), expected)
+        let actual = try XCTUnwrap(try? request.xSuccess?.asURL())
+        XCTAssertEqual(actual, expected)
         // Removal
         request.removeXSuccessAction()
         XCTAssertEqual(request.parameters.count, 1) // Accounts for x-source
@@ -161,20 +164,20 @@ class XCallbackRequestTests: XCTestCase {
     }
     
     // MARK: xError
-    func testXError() {
-        let returnScheme = UUID().uuidString
+    func testXError() throws {
+        let returnScheme = URL.generateValidScheme()
         let action = UUID().uuidString
         let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
-        var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
+        var request = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                       action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xError)
         // Adding
         request.addXErrorAction(scheme: returnScheme, action: action)
         XCTAssertEqual(request.parameters.count, 2) // Accounts for x-source
         // Retrieval
-        let actual = request.xError
-        XCTAssertNotNil(actual)
-        XCTAssertEqual(try! actual?.asURL(), expected)
+        let actual = try XCTUnwrap(try? request.xError?.asURL())
+        XCTAssertEqual(actual, expected)
         // Removal
         request.removeXErrorAction()
         XCTAssertEqual(request.parameters.count, 1) // Accounts for x-source
@@ -182,26 +185,27 @@ class XCallbackRequestTests: XCTestCase {
     
     func testXError_Invalid() {
         let invalidURLString = "^^Invalid^^"
-        var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
+        var request = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                       action: UUID().uuidString)
         request.addParameter(XCallbackParameter.ErrorKey, invalidURLString)
         XCTAssertNil(request.xError)
     }
     
     // MARK: xCancel
-    func testXCancel() {
-        let returnScheme = UUID().uuidString
+    func testXCancel() throws {
+        let returnScheme = URL.generateValidScheme()
         let action = UUID().uuidString
         let expected = URL(string: "\(returnScheme)://x-callback-url/\(action)?")
-        var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
+        var request = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                       action: UUID().uuidString)
         // Unset State
         XCTAssertNil(request.xCancel)
         // Adding
         request.addXCancelAction(scheme: returnScheme, action: action)
         XCTAssertEqual(request.parameters.count, 2) // Accounts for x-source
         // Retrieval
-        let actual = request.xCancel
-        XCTAssertNotNil(actual)
-        XCTAssertEqual(try! actual?.asURL(), expected)
+        let actual = try XCTUnwrap(try? request.xCancel?.asURL())
+        XCTAssertEqual(actual, expected)
         // Removal
         request.removeXCancelAction()
         XCTAssertEqual(request.parameters.count, 1) // Accounts for x-source
@@ -209,7 +213,8 @@ class XCallbackRequestTests: XCTestCase {
     
     func testXCancel_Invalid() {
         let invalidURLString = "^^Invalid^^"
-        var request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
+        var request = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                       action: UUID().uuidString)
         request.addParameter(XCallbackParameter.CancelKey, invalidURLString)
         XCTAssertNil(request.xCancel)
     }

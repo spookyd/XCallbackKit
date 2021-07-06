@@ -11,17 +11,12 @@ import XCTest
 
 class XCallbackKitTests: XCTestCase {
 
-    var kit: XCallbackKit!
-    var requestHandler: MockRequestHandler!
+    lazy var kit = XCallbackKit(requestHandler: requestHandler)
+    lazy var requestHandler = MockRequestHandler()
     
     override func setUp() {
         self.requestHandler = MockRequestHandler()
         self.kit = XCallbackKit(requestHandler: requestHandler)
-    }
-    
-    override func tearDown() {
-        self.kit = .none
-        self.requestHandler = .none
     }
     
     // MARK: - Convenience Methods
@@ -29,7 +24,8 @@ class XCallbackKitTests: XCTestCase {
         let actionName = UUID().uuidString
         let handler = MockActionHandler()
         self.kit.registerActionHandler(actionName, handler)
-        let request = XCallbackRequest(targetScheme: UUID().uuidString, action: actionName)
+        let request = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                       action: actionName)
         XCTAssertTrue(self.kit.canHandle(request))
     }
     
@@ -37,7 +33,8 @@ class XCallbackKitTests: XCTestCase {
         let actionName = UUID().uuidString
         let handler = MockActionHandler()
         self.kit.registerActionHandler(actionName, handler)
-        let request = XCallbackRequest(targetScheme: UUID().uuidString, action: UUID().uuidString)
+        let request = XCallbackRequest(targetScheme: URL.generateValidScheme(),
+                                       action: UUID().uuidString)
         XCTAssertFalse(self.kit.canHandle(request))
     }
     
@@ -50,12 +47,12 @@ class XCallbackKitTests: XCTestCase {
     }
     
     // MARK: - Sending Requests
-    func testSend() {
+    func testSend() throws {
         let action = UUID().uuidString
         requestHandler.canOpenURLReturnValue = true
         let request = XCallbackRequest(targetScheme: "callbackTest", action: action)
-        let expected = try! request.asURL()
-        try! self.kit.send(request)
+        let expected = try request.asURL()
+        try self.kit.send(request)
         XCTAssertEqual(self.requestHandler.openURLValue!, expected)
     }
     
@@ -80,18 +77,18 @@ class XCallbackKitTests: XCTestCase {
         }
     }
     
-    func testSend_disablingSchemeQueryChecking() {
+    func testSend_disablingSchemeQueryChecking() throws {
         let action = UUID().uuidString
         requestHandler.canOpenURLReturnValue = false
         self.kit.isSchemeQueryingEnabled = false
         let request = XCallbackRequest(targetScheme: "callbackTest", action: action)
-        let expected = try! request.asURL()
-        try! self.kit.send(request)
+        let expected = try request.asURL()
+        try self.kit.send(request)
         XCTAssertEqual(self.requestHandler.openURLValue!, expected)
     }
     
     // MARK: - Incoming Request Handling
-    func testResponseHandler_success() {
+    func testResponseHandler_success() throws {
         // Build Action Handler
         let action = UUID().uuidString
         let parameters: [String: String] = [
@@ -101,7 +98,7 @@ class XCallbackKitTests: XCTestCase {
         self.kit.registerActionHandler(action, handler)
         // Build the incoming request
         var request = XCallbackRequest(targetScheme: "callbackTest", action: action)
-        let expectedTargetScheme = UUID().uuidString
+        let expectedTargetScheme = URL.generateValidScheme()
         let expectedAction = UUID().uuidString
         request.addXSuccessAction(scheme: expectedTargetScheme, action: expectedAction)
         // Build the expected xSuccess request
@@ -109,14 +106,14 @@ class XCallbackKitTests: XCTestCase {
         expected.addParameter(parameters.first!.key, parameters.first!.value)
         try! self.kit.handle(request)
         // Validation
-        XCTAssertNotNil(requestHandler.openURLValue)
-        let actual = try! requestHandler.openURLValue!.asXCallbackRequest()
+        let urlValue = try XCTUnwrap(requestHandler.openURLValue)
+        let actual = try urlValue.asXCallbackRequest()
         XCTAssertEqual(actual.targetScheme, expectedTargetScheme)
         XCTAssertEqual(actual.action, expectedAction)
         XCTAssertEqual(actual.parameters, expected.parameters)
     }
     
-    func testResponseHandler_error() {
+    func testResponseHandler_error() throws {
         // Build Action Handler
         let action = UUID().uuidString
         let expectedErrorCode = Int.random(in: 0...10_000)
@@ -125,33 +122,33 @@ class XCallbackKitTests: XCTestCase {
         self.kit.registerActionHandler(action, handler)
         // Build the incoming request
         var request = XCallbackRequest(targetScheme: "callbackTest", action: action)
-        let expectedTargetScheme = UUID().uuidString
+        let expectedTargetScheme = URL.generateValidScheme()
         let expectedAction = UUID().uuidString
         request.addXErrorAction(scheme: expectedTargetScheme, action: expectedAction)
         try! self.kit.handle(request)
         // Validation
-        XCTAssertNotNil(requestHandler.openURLValue)
-        let actual = try! requestHandler.openURLValue!.asXCallbackRequest()
+        let urlValue = try XCTUnwrap(requestHandler.openURLValue)
+        let actual = try urlValue.asXCallbackRequest()
         XCTAssertEqual(actual.targetScheme, expectedTargetScheme)
         XCTAssertEqual(actual.action, expectedAction)
         XCTAssertEqual(actual.parameters[XCallbackParameter.ErrorCode], "\(expectedErrorCode)")
         XCTAssertEqual(actual.parameters[XCallbackParameter.ErrorMessage], expectedMessage)
     }
     
-    func testResponseHandler_cancel() {
+    func testResponseHandler_cancel() throws {
         // Build Action Handler
         let action = UUID().uuidString
         let handler = MockActionHandler(response: .cancel())
         self.kit.registerActionHandler(action, handler)
         // Build the incoming request
         var request = XCallbackRequest(targetScheme: "callbackTest", action: action)
-        let expectedTargetScheme = UUID().uuidString
+        let expectedTargetScheme = URL.generateValidScheme()
         let expectedAction = UUID().uuidString
         request.addXCancelAction(scheme: expectedTargetScheme, action: expectedAction)
         try! self.kit.handle(request)
         // Validation
-        XCTAssertNotNil(requestHandler.openURLValue)
-        let actual = try! requestHandler.openURLValue!.asXCallbackRequest()
+        let urlValue = try XCTUnwrap(requestHandler.openURLValue)
+        let actual = try urlValue.asXCallbackRequest()
         XCTAssertEqual(actual.targetScheme, expectedTargetScheme)
         XCTAssertEqual(actual.action, expectedAction)
     }
