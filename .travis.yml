@@ -1,8 +1,8 @@
 language: swift
 xcode_project: XCallbackKit.xcodeproj
 xcode_scheme: XCallbackKit
-osx_image: xcode10.2
-xcode_sdk: iphonesimulator12.2
+osx_image: xcode12.5
+xcode_sdk: iphonesimulator14.5
 env:
   global:
       - FRAMEWORK_NAME=XCallbackKit
@@ -10,7 +10,7 @@ before_install:
   - brew update
   - brew outdated carthage || brew upgrade carthage
 script:
-    - xcodebuild clean build test -project XCallbackKit.xcodeproj -scheme XCallbackKit -destination 'platform=iOS Simulator,name=iPhone X,OS=12.2'
+    - xcodebuild clean build test -project XCallbackKit.xcodeproj -scheme XCallbackKit -destination 'platform=iOS Simulator,name=iPhone 12,OS=14.5'
 before_deploy:
   - carthage build --no-skip-current
   - carthage archive $FRAMEWORK_NAME
